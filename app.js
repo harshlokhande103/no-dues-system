@@ -20,7 +20,7 @@ app.use(session({
 
 // Landing page route
 app.get('/', (req, res) => {
-  res.render('index'); // ya res.send("Welcome to No Dues System");
+  res.send("Welcome to No Dues System!"); // ya res.render('index');
 });
 
 app.get('/start', (req, res) => {
