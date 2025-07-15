@@ -18,9 +18,10 @@ app.use(session({
   saveUninitialized: true
 }));
 
-// Landing page route
+
+
 app.get('/', (req, res) => {
-  res.send("Welcome to No Dues System!"); // ya res.render('index');
+  res.render('index'); // ya res.render('index');
 });
 
 app.get('/start', (req, res) => {
