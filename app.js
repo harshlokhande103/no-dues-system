@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const { db } = require('./config/firebase');
-const { doc, collection, query, where, getDocs, addDoc } = require('firebase/firestore');
+const { doc, collection, query, where, getDocs, addDoc, orderBy, Timestamp } = require('firebase/firestore');
 const session = require('express-session');
 
 app.set('view engine', 'ejs');
@@ -18,6 +18,7 @@ app.use(session({
   saveUninitialized: true
 }));
 
+app.use(express.urlencoded({ extended: true }));
 
 
 app.get('/', (req, res) => {
@@ -37,8 +38,10 @@ app.get('/register/student', (req, res) => {
 app.post('/register/student', express.urlencoded({ extended: true }), async (req, res) => {
   const { name, email, enrolment, branch, year, section, password } = req.body;
   try {
-    // Firestore me data store karo (aapka existing code)
-    await addDoc(collection(db, "students"), {
+    // Branch document reference
+    const branchDocRef = doc(db, "branches", branch);
+
+    await addDoc(collection(branchDocRef, "students"), {
       name,
       email,
       enrolment,
@@ -48,10 +51,7 @@ app.post('/register/student', express.urlencoded({ extended: true }), async (req
       password
     });
 
-    // Session me student ki info save karo
     req.session.student = { name, email, enrolment, branch, year, section };
-
-    // Registration ke baad dashboard pe redirect karo
     res.redirect('/studentDashboard');
   } catch (error) {
     res.send("Error: " + error.message);
@@ -64,24 +64,28 @@ app.get('/register/teacher', (req, res) => {
 });
 app.post('/register/teacher', express.urlencoded({ extended: true }), async (req, res) => {
   let { name, email, branch, year, section, password } = req.body;
-
-  // Ensure branch, year, section are arrays
   if (!Array.isArray(branch)) branch = [branch];
   if (!Array.isArray(year)) year = [year];
   if (!Array.isArray(section)) section = [section];
 
-  await addDoc(collection(db, "teachers"), {
-    name,
-    email,
-    branch,
-    year,
-    section,
-    password
-  });
+  try {
+    // Branch document reference
+    const branchDocRef = doc(db, "branches", branch[0]); // Agar ek se zyada branch, to yahan logic lagao
 
-  req.session.teacher = { name, email, branch, year, section };
+    await addDoc(collection(branchDocRef, "teachers"), {
+      name,
+      email,
+      branch,
+      year,
+      section,
+      password
+    });
 
-  res.redirect('/teacherDashboard');
+    req.session.teacher = { name, email, branch, year, section };
+    res.redirect('/teacherDashboard');
+  } catch (error) {
+    res.send("Error: " + error.message);
+  }
 });
 
 // Admin registration
@@ -90,10 +94,11 @@ app.get('/register/admin', (req, res) => {
 });
 app.post('/register/admin', express.urlencoded({ extended: true }), async (req, res) => {
   const { name, email, branch, password } = req.body;
-  console.log("Admin registration data:", req.body);
   try {
+    // Branch document reference
     const branchDocRef = doc(db, "branches", branch);
 
+    // Admins subcollection ke andar naya document
     await addDoc(collection(branchDocRef, "admins"), {
       name,
       email,
@@ -101,7 +106,8 @@ app.post('/register/admin', express.urlencoded({ extended: true }), async (req, 
       password
     });
 
-    res.send("Admin registered successfully!");
+    req.session.admin = { name, email, branch };
+    res.redirect('/adminDashboard');
   } catch (error) {
     res.send("Error: " + error.message);
   }
@@ -114,9 +120,10 @@ app.get('/login/student', (req, res) => {
 app.post('/login/student', express.urlencoded({ extended: true }), async (req, res) => {
   const { email, password, branch, year, section } = req.body;
   try {
-    // Firestore se student find karo (aapka existing code)
+    // Branch document reference
+    const branchDocRef = doc(db, "branches", branch);
     const q = query(
-      collection(db, "students"),
+      collection(branchDocRef, "students"),
       where("email", "==", email)
     );
     const querySnapshot = await getDocs(q);
@@ -187,7 +194,9 @@ app.post('/login/teacher', express.urlencoded({ extended: true }), async (req, r
     req.session.teacher = {
       name: teacherData.name,
       email: teacherData.email,
-      branch: teacherData.branch
+      branch: teacherData.branch,
+      year: teacherData.year,     // Add year to session
+      section: teacherData.section // Add section to session
     };
 
     res.redirect('/teacherDashboard');
@@ -201,10 +210,15 @@ app.get('/login/admin', (req, res) => {
   res.render('adminLogin');
 });
 app.post('/login/admin', express.urlencoded({ extended: true }), async (req, res) => {
-  const { email, password, branch } = req.body;
+  let { email, password, branch } = req.body;
+  email = email.trim().toLowerCase(); // normalize email
+  console.log("Login Email:", email, "Branch:", branch);
+
   try {
+    // Branch document reference
     const branchDocRef = doc(db, "branches", branch);
 
+    // Branch ke andar admins subcollection me query karo
     const q = query(
       collection(branchDocRef, "admins"),
       where("email", "==", email)
@@ -236,23 +250,127 @@ app.post('/login/admin', express.urlencoded({ extended: true }), async (req, res
   }
 });
 
-app.get('/studentDashboard', (req, res) => {
+app.get('/studentDashboard', async (req, res) => {
   if (!req.session.student) {
     return res.redirect('/login/student');
   }
+  const branch = req.session.student.branch;
+  const notifications = [];
+  const q = query(
+    collection(db, "notifications"),
+    where("branch", "==", branch),
+    orderBy("createdAt", "desc")
+  );
+  const snapshot = await getDocs(q);
+  snapshot.forEach(doc => notifications.push(doc.data().message));
   res.render('studentDashboard', {
     student: req.session.student,
     noDuesList: [], // yahan aap real data bhej sakte hain
-    notifications: []
+    notifications
   });
 });
 
-app.get('/teacherDashboard', (req, res) => {
+app.get('/teacherDashboard', async (req, res) => {
   if (!req.session.teacher) {
     return res.redirect('/login/teacher');
   }
-  res.render('teacherDashboard', { teacher: req.session.teacher });
+  const branch = req.session.teacher.branch;
+  const notifications = [];
+  const q = query(
+    collection(db, "notifications"),
+    where("branch", "==", branch),
+    orderBy("createdAt", "desc")
+  );
+  const snapshot = await getDocs(q);
+  snapshot.forEach(doc => notifications.push(doc.data().message));
+  res.render('teacherDashboard', { teacher: req.session.teacher, notifications });
 });
+
+// Add this route handler for adminDashboard
+app.get('/adminDashboard', async (req, res) => {
+  if (!req.session.admin) {
+    return res.redirect('/login/admin');
+  }
+  
+  try {
+    const branch = req.session.admin.branch;
+    
+    // Fetch teachers from the admin's branch
+    const branchDocRef = doc(db, "branches", branch);
+    const teachersQuery = collection(branchDocRef, "teachers");
+    const teachersSnapshot = await getDocs(teachersQuery);
+    
+    const teachers = [];
+    teachersSnapshot.forEach(doc => {
+      teachers.push(doc.data());
+    });
+    
+    // Fetch notifications
+    const notifications = [];
+    const notificationsQuery = query(
+      collection(db, "notifications"),
+      where("branch", "==", branch),
+      orderBy("createdAt", "desc")
+    );
+    const notificationsSnapshot = await getDocs(notificationsQuery);
+    notificationsSnapshot.forEach(doc => {
+      notifications.push({
+        id: doc.id,
+        message: doc.data().message
+      });
+    });
+    
+    res.render('adminDashboard', { 
+      admin: req.session.admin, 
+      teachers: teachers,
+      notifications: notifications
+    });
+  } catch (error) {
+    res.send("Error: " + error.message);
+  }
+});
+
+// Keep your existing /admin/dashboard route if needed
+app.get('/admin/dashboard', (req, res) => {
+  // Existing code to fetch admin data
+  
+  // Add this line to define notifications with an empty array as default
+  const notifications = []; // or fetch from database if you have that functionality
+  
+  res.render('adminDashboard', { 
+    admin: adminData, 
+    teachers: teachersData,
+    notifications: notifications // Add this line to pass notifications to the template
+  });
+});
+
+app.get('/admin/filter', async (req, res) => {
+  const { year, section } = req.query;
+  const branch = req.session.admin.branch; // admin ki branch session se lo
+
+  const branchDocRef = doc(db, "branches", branch);
+  let q = collection(branchDocRef, "students");
+
+  let filters = [];
+  if (year) filters.push(where("year", "==", year));
+  if (section) filters.push(where("section", "==", section));
+
+  let finalQuery = filters.length > 0 ? query(q, ...filters) : q;
+
+  const students = [];
+  const snapshot = await getDocs(finalQuery);
+  snapshot.forEach(docSnap => {
+    students.push({
+      id: docSnap.id,
+      ...docSnap.data()
+    });
+  });
+
+  res.render('filter', { students, branch, year, section });
+});
+
+const adminRoutes = require('./routes/admin');
+app.use('/admin', adminRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
