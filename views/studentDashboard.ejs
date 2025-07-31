@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard - No Dues System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(120deg, #6dd5fa, #43cea2, #fff);
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .dashboard-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(24,90,157,0.12);
+      padding: 2.5rem 2rem;
+    }
+    .dashboard-title {
+      font-size: 2.2rem;
+      color: #185a9d;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .logout-btn {
+      float: right;
+      background: #185a9d;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: -2.5rem;
+      margin-right: 0.5rem;
+      transition: background 0.2s;
+    }
+    .logout-btn:hover {
+      background: #43cea2;
+      color: #185a9d;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      color: #2980b9;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      border-left: 4px solid #43cea2;
+      padding-left: 10px;
+    }
+    .profile-info {
+      color: #444;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      background: #f8fafd;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .status-table th, .status-table td {
+      border: 1px solid #43cea2;
+      padding: 0.8rem 1rem;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .status-table th {
+      background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+      color: #fff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .status-table tr:nth-child(even) {
+      background: #eafaf1;
+    }
+    .status-table tr:hover {
+      background: #d0f0e6;
+      transition: background 0.2s;
+    }
+    .status-approved { 
+      color: #27ae60; 
+      font-weight: bold; 
+      background: #d5f4e6;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .status-pending { 
+      color: #f39c12; 
+      font-weight: bold; 
+      background: #fef9e7;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .status-rejected { 
+      color: #e74c3c; 
+      font-weight: bold; 
+      background: #fadbd8;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .download-btn {
+      background: #43cea2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+    .download-btn:hover {
+      background: #185a9d;
+      color: #fff;
+    }
+    .placeholder {
+      color: #888;
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+    }
+    .refresh-btn {
+      background: #185a9d;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background 0.2s;
+    }
+    .refresh-btn:hover {
+      background: #43cea2;
+    }
+    .summary-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .summary-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .summary-stats {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      text-align: center;
+      margin: 0 1rem;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <button class="logout-btn">Logout</button>
+    <div class="dashboard-title">Student Dashboard</div>
+
+    <!-- Profile Information -->
+    <div class="section">
+      <div class="section-title">Profile Information</div>
+      <div class="profile-info">
+        Name: <b><%= student.name %></b><br>
+        Email: <b><%= student.email %></b><br>
+        Enrolment: <b><%= student.enrolment %></b><br>
+        Branch: <b><%= student.branch %></b><br>
+        Year: <b><%= student.year %></b><br>
+        Section: <b><%= student.section %></b>
+      </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="summary-box">
+      <div class="summary-title">No Dues Summary</div>
+      <div class="summary-stats">
+        <div class="stat-item">
+          <span class="stat-number" id="approved-count">
+            <%= noDuesList ? noDuesList.filter(item => item.status === 'Approved').length : 0 %>
+          </span>
+          <span class="stat-label">Approved</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="pending-count">
+            <%= noDuesList ? noDuesList.filter(item => item.status === 'Pending').length : 0 %>
+          </span>
+          <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="rejected-count">
+            <%= noDuesList ? noDuesList.filter(item => item.status === 'Rejected').length : 0 %>
+          </span>
+          <span class="stat-label">Rejected</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Dues Status Table -->
+    <div class="section">
+      <div class="section-title">
+        No Dues Status 
+        <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+      </div>
+      <table class="status-table">
+        <tr>
+          <th>Teacher/Department</th>
+          <th>Status</th>
+          <th>Remarks</th>
+          <th>Date</th>
+        </tr>
+        <% if (noDuesList && noDuesList.length > 0) { %>
+          <% noDuesList.forEach(function(approval) { %>
+            <tr>
+              <td><%= approval.teacherName %></td>
+              <td class="<%= approval.status === 'Approved' ? 'status-approved' : (approval.status === 'Rejected' ? 'status-rejected' : 'status-pending') %>">
+                <%= approval.status %>
+              </td>
+              <td><%= approval.remarks || 'No remarks' %></td>
+              <td>
+                <% if (approval.timestamp) { %>
+                  <%= new Date(approval.timestamp.toDate()).toLocaleDateString() %>
+                <% } else { %>
+                  N/A
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="4">
+              <i>No approval records found. Teachers will update your status here.</i>
+            </td>
+          </tr>
+        <% } %>
+      </table>
+    </div>
+
+    <!-- Download Certificate Button -->
+    <div class="section">
+      <form action="/downloadCertificate" method="get">
+        <button class="download-btn" type="submit">Download No Dues Certificate</button>
+      </form>
+    </div>
+
+    <!-- Notifications -->
+    <div class="section">
+      <div class="section-title">Notifications</div>
+      <div class="placeholder">
+        <% if (notifications && notifications.length > 0) { %>
+          <ul>
+            <% notifications.forEach(function(note) { %>
+              <li><%= note %></li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <i>No notifications.</i>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auto refresh every 30 seconds to check for updates
+    setInterval(function() {
+      // Only refresh if user is not actively using the page
+      if (!document.hidden) {
+        location.reload();
+      }
+    }, 30000);
+  </script>
+</body>
+</html>

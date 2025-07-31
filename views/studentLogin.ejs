@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Login - No Dues System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(120deg, #6dd5fa, #2980b9, #fff);
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .login-title {
+      font-size: 2.5rem;
+      color: #2980b9;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 1px 2px 8px #6dd5fa55;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      background: #fff;
+      padding: 2.5rem 2.5rem 2rem 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(41,128,185,0.18);
+      min-width: 340px;
+    }
+    .login-form input {
+      padding: 1rem 1.2rem;
+      font-size: 1.1rem;
+      border: 1.5px solid #6dd5fa;
+      border-radius: 8px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .login-form input:focus {
+      border: 1.5px solid #2980b9;
+      background: #f0f8ff;
+    }
+    .login-btn {
+      padding: 0.9rem 1.2rem;
+      font-size: 1.1rem;
+      background: linear-gradient(90deg, #2980b9, #6dd5fa);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px #2980b955;
+      transition: background 0.3s, color 0.3s;
+    }
+    .login-btn:hover {
+      background: linear-gradient(90deg, #6dd5fa, #2980b9);
+      color: #fff;
+    }
+    .register-link {
+      margin-top: 1.2rem;
+      text-align: center;
+      font-size: 1rem;
+      color: #2980b9;
+    }
+    .register-link a {
+      color: #6dd5fa;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 0.5rem;
+      transition: color 0.2s;
+    }
+    .register-link a:hover {
+      color: #2980b9;
+      text-decoration: underline;
+    }
+    .styled-select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 1.5px solid #43cea2;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      background: #f8fafd;
+      color: #185a9d;
+      margin-bottom: 1.2rem;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #43cea220;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1.2rem;
+    }
+
+    .styled-select:focus {
+      border: 1.5px solid #185a9d;
+      box-shadow: 0 4px 16px #43cea240;
+      background: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-title">Student Login</div>
+    <form class="login-form" action="/login/student" method="post">
+      <label for="branch" style="color:#185a9d; font-weight:bold; margin-bottom:0.3rem;">Branch</label>
+      <select name="branch" class="styled-select" required>
+        <option value="" disabled selected>Select Branch</option>
+        <option value="CSE">CSE</option>
+        <option value="IT">IT</option>
+        <option value="ECE">ECE</option>
+        <option value="EEE">EEE</option>
+        <option value="ME">ME</option>
+        <option value="CE">CE</option>
+      </select>
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <button class="login-btn" type="submit">Login</button>
+    </form>
+    <div class="register-link">
+      Don't have an account?
+      <a href="/register/student">Register</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Registration - No Dues System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(120deg, #43cea2, #185a9d, #fff);
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .register-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .register-title {
+      font-size: 2.5rem;
+      color: #185a9d;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 1px 2px 8px #43cea255;
+    }
+    .register-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      background: #fff;
+      padding: 2.5rem 2.5rem 2rem 2.5rem;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(24,90,157,0.18);
+      min-width: 340px;
+    }
+    .register-form input, .register-form select {
+      padding: 1rem 1.2rem;
+      font-size: 1.1rem;
+      border: 1.5px solid #43cea2;
+      border-radius: 8px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .register-form input:focus, .register-form select:focus {
+      border: 1.5px solid #185a9d;
+      background: #f0f8ff;
+    }
+    .register-btn {
+      padding: 0.9rem 1.2rem;
+      font-size: 1.1rem;
+      background: linear-gradient(90deg, #185a9d, #43cea2);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px #185a9d55;
+      transition: background 0.3s, color 0.3s;
+    }
+    .register-btn:hover {
+      background: linear-gradient(90deg, #43cea2, #185a9d);
+      color: #fff;
+    }
+    .login-link {
+      margin-top: 1.2rem;
+      text-align: center;
+      font-size: 1rem;
+      color: #185a9d;
+    }
+    .login-link a {
+      color: #43cea2;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 0.5rem;
+      transition: color 0.2s;
+    }
+    .login-link a:hover {
+      color: #185a9d;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-title">Student Registration</div>
+    <form class="register-form" action="/register/student" method="post">
+      <input type="text" name="name" placeholder="Full Name" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="text" name="enrolment" placeholder="Enrolment Number" required />
+      <select name="branch" required>
+        <option value="" disabled selected>Select Branch</option>
+        <option value="CSE">CSE</option>
+        <option value="IT">IT</option>
+        <option value="ECE">ECE</option>
+        <option value="EEE">EEE</option>
+        <option value="ME">ME</option>
+        <option value="AIDS">AIDS</option>
+        <option value="CYBER">CYBER</option>
+        <option value="CE">CE</option>
+      </select>
+      <!-- Year field added here -->
+      <select name="year" required>
+        <option value="" disabled selected>Select Year</option>
+        <option value="1st">1st Year</option>
+        <option value="2nd">2nd Year</option>
+        <option value="3rd">3rd Year</option>
+        <option value="4th">4th Year</option>
+      </select>
+      <select name="section" required>
+        <option value="" disabled selected>Select Section</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+      <input type="password" name="password" placeholder="Password" required />
+      <button class="register-btn" type="submit">Register</button>
+    </form>
+    <div class="login-link">
+      Already have an account?
+      <a href="/login/student">Login</a>
+    </div>
+  </div>
+</body>
+</html>

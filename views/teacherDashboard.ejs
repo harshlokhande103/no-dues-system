@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Dashboard - No Dues System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(120deg, #6dd5fa, #185a9d, #fff);
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .dashboard-container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(24,90,157,0.12);
+      padding: 2.5rem 2rem;
+    }
+    .dashboard-title {
+      font-size: 2.2rem;
+      color: #185a9d;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      color: #2980b9;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      border-left: 4px solid #43cea2;
+      padding-left: 10px;
+    }
+    .placeholder {
+      color: #888;
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+    }
+    .logout-btn {
+      float: right;
+      background: #185a9d;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: -2.5rem;
+      margin-right: 0.5rem;
+      transition: background 0.2s;
+    }
+    .logout-btn:hover {
+      background: #43cea2;
+      color: #185a9d;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <button class="logout-btn">Logout</button>
+    <div class="dashboard-title">Teacher Dashboard</div>
+
+    <!-- Profile Information Section -->
+    <div class="section">
+      <div class="section-title">Profile Information</div>
+      <div class="placeholder">
+        Name: <b><%= teacher.name %></b><br>
+        Email: <b><%= teacher.email %></b><br>
+        Branch(es): <b>
+          <% if (Array.isArray(teacher.branch)) { %>
+            <%= teacher.branch.join(", ") %>
+          <% } else { %>
+            <%= teacher.branch %>
+          <% } %>
+        </b><br>
+        Year(s): <b>
+          <% if (Array.isArray(teacher.year)) { %>
+            <%= teacher.year.join(", ") %>
+          <% } else { %>
+            <%= teacher.year %>
+          <% } %>
+        </b><br>
+        Section(s): <b>
+          <% if (Array.isArray(teacher.section)) { %>
+            <%= teacher.section.join(", ") %>
+          <% } else { %>
+            <%= teacher.section %>
+          <% } %>
+        </b>
+      </div>
+    </div>
+
+    <!-- Section 2: Pending No Dues Requests -->
+    <div class="section">
+      <div class="section-title">Pending No Dues Requests</div>
+      <div class="placeholder">
+        <!-- Yahan students ki list aayegi jinke no dues pending hain -->
+        <i>No pending requests.</i>
+      </div>
+    </div>
+
+    <!-- Section 3: Approved Requests -->
+    <div class="section">
+      <div class="section-title">Approved Requests</div>
+      <div class="placeholder">
+        <!-- Yahan approved students ki list aayegi -->
+        <i>No approved requests yet.</i>
+      </div>
+    </div>
+
+    <!-- Section 4: Search Student (optional) -->
+    <div class="section">
+      <div class="section-title">Search Student</div>
+      <form>
+        <input type="text" placeholder="Enter student name or enrolment no." style="padding:0.6rem 1rem; border-radius:6px; border:1px solid #43cea2; width: 250px;">
+        <button type="submit" style="padding:0.6rem 1.2rem; border-radius:6px; border:none; background:#43cea2; color:#fff; font-weight:bold; margin-left:8px;">Search</button>
+      </form>
+    </div>
+
+    <!-- Section 5: Notifications (optional) -->
+    <div class="section">
+      <div class="section-title">Notifications</div>
+      <div class="placeholder">
+        <!-- Yahan notifications ya messages show honge -->
+        <% if (notifications && notifications.length > 0) { %>
+          <ul>
+            <% notifications.forEach(function(note) { %>
+              <li><%= note %></li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <i>No notifications.</i>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Filter Section (update this part) -->
+    <div class="section">
+      <div class="section-title">Filter Students</div>
+      <form method="get" action="/teacher/filter" class="filter-form" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <!-- Removed branch selection since teachers can only filter their own branch -->
+        <label>
+          Section:
+          <select name="section" style="padding:0.5rem 1rem; border-radius:6px; border:1px solid #43cea2; margin-left: 0.5rem;">
+            <option value="All">All</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </label>
+        <label>
+          Year:
+          <select name="year" style="padding:0.5rem 1rem; border-radius:6px; border:1px solid #43cea2; margin-left: 0.5rem;">
+            <option value="All">All</option>
+            <option value="1st">1st Year</option>
+            <option value="2nd">2nd Year</option>
+            <option value="3rd">3rd Year</option>
+            <option value="4th">4th Year</option>
+          </select>
+        </label>
+        <button type="submit" style="padding:0.6rem 1.2rem; border-radius:6px; border:none; background:#185a9d; color:#fff; font-weight:bold;">Filter</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

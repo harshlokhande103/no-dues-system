@@ -1,0 +1,52 @@
+<!-- backend/views/role.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Role - No Dues System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .role-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .role-title {
+      font-size: 2.5rem;
+      color: #2980b9;
+      margin-bottom: 2rem;
+    }
+    .role-options {
+      display: flex;
+      gap: 2rem;
+    }
+    .role-btn {
+      padding: 1.2rem 2.5rem;
+      font-size: 1.1rem;
+      background: #6dd5fa;
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+      box-shadow: 0 4px 16px rgba(41,128,185,0.15);
+    }
+    .role-btn:hover {
+      background: #2980b9;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="role-container">
+    <div class="role-title">Select Your Role</div>
+    <div class="role-options">
+      <a href="/login/student" class="role-btn">As a Student</a>
+      <a href="/login/teacher" class="role-btn">As a Teacher</a>
+      <a href="/login/admin" class="role-btn">As an Admin</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Filtered Students - Teacher View</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<style>
+    .filtered-table-container {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(41,128,185,0.10);
+      padding: 2.5rem 2rem;
+      max-width: 900px;
+      margin: 40px auto;
+    }
+
+    .filtered-title {
+      font-size: 2.2rem;
+      color: #185a9d;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .filtered-info {
+      font-size: 1.1rem;
+      color: #185a9d;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      background: #f8fafd;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .status-table th, .status-table td {
+      border: 1px solid #43cea2;
+      padding: 1rem 1.2rem;
+      text-align: center;
+      font-size: 1.08rem;
+    }
+
+    .status-table th {
+      background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+      color: #fff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .status-table tr:nth-child(even) {
+      background: #eafaf1;
+    }
+
+    .status-table tr:hover {
+      background: #d0f0e6;
+      transition: background 0.2s;
+    }
+    
+    .back-btn {
+      background: #185a9d;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      display: inline-block;
+      text-decoration: none;
+    }
+    
+    .back-btn:hover {
+      background: #43cea2;
+    }
+    
+    .action-btn {
+      background: #43cea2;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 12px;
+      cursor: pointer;
+    }
+    
+    .action-btn:hover {
+      background: #185a9d;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .status-approved {
+      background-color: #27ae60;
+      color: white;
+    }
+    .status-rejected {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    .approve-btn, .reject-btn {
+      border: none;
+      border-radius: 5px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 0 2px;
+      transition: all 0.3s ease;
+    }
+    
+    .approve-btn {
+      background: #27ae60;
+      color: white;
+    }
+    
+    .approve-btn:hover {
+      background: #229954;
+    }
+    
+    .reject-btn {
+      background: #e74c3c;
+      color: white;
+    }
+    
+    .reject-btn:hover {
+      background: #c0392b;
+    }
+    
+    .approve-btn:disabled, .reject-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+</style>
+<body>
+  <div class="filtered-table-container">
+    <a href="/teacherDashboard" class="back-btn">← Back to Dashboard</a>
+    <div class="filtered-title">Filtered Students</div>
+    <div class="filtered-info">
+      <b>Branch:</b> <%= branch || "All" %> &nbsp;|&nbsp;
+      <b>Year:</b> <%= year || "All" %> &nbsp;|&nbsp;
+      <b>Section:</b> <%= section || "All" %>
+    </div>
+    <table class="status-table">
+      <tr>
+        <th>Name</th>
+        <th>Enrolment</th>
+        <th>Branch</th>
+        <th>Year</th>
+        <th>Section</th>
+        <th>Action</th>
+      </tr>
+      <% if (students && students.length > 0) { %>
+        <% students.forEach(function(student) { %>
+          <tr id="student-<%= student.id %>" data-student-id="<%= student.id %>" data-branch="<%= student.branch %>">
+            <td><%= student.name %></td>
+            <td><%= student.enrolment %></td>
+            <td><%= student.branch %></td>
+            <td><%= student.year %></td>
+            <td><%= student.section %></td>
+            <td>
+              <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+                <button class="approve-btn" onclick="approveStudent('<%= student.id %>', '<%= student.branch %>')" 
+                        id="approve-<%= student.id %>" 
+                        <%= student.currentStatus === 'Approved' ? 'disabled' : '' %>>
+                  ✓ Approve
+                </button>
+                <button class="reject-btn" onclick="rejectStudent('<%= student.id %>', '<%= student.branch %>')" 
+                        id="reject-<%= student.id %>"
+                        <%= student.currentStatus === 'Rejected' ? 'disabled' : '' %>>
+                  ✗ Reject
+                </button>
+                <div id="status-indicator-<%= student.id %>" class="status-indicator" 
+                     style="<%= student.approved || student.currentStatus ? 'display: inline-block;' : 'display: none;' %>">
+                  <% if (student.currentStatus) { %>
+                    <span class="<%= student.currentStatus === 'Approved' ? 'status-approved' : 'status-rejected' %>">
+                      <%= student.currentStatus %>
+                    </span>
+                  <% } else if (student.approved) { %>
+                    <span class="status-approved">Approved</span>
+                  <% } %>
+                </div>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="6"><i>No students found for this filter.</i></td>
+        </tr>
+      <% } %>
+    </table>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <button id="update-btn" class="back-btn" style="background:#43cea2; margin-top: 10px;">Update Approvals</button>
+    </div>
+  </div>
+
+<script>
+  // Store student statuses
+  var studentStatuses = {};
+  
+  function approveStudent(studentId, branch) {
+    $.ajax({
+      url: '/teacher/approve-student',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        studentId: studentId,
+        branch: branch
+      }),
+      success: function(response) {
+        if (response.success) {
+          // Update UI - disable approve button, enable reject button
+          $('#approve-' + studentId).prop('disabled', true);
+          $('#reject-' + studentId).prop('disabled', false);
+          $('#status-indicator-' + studentId).html('<span class="status-approved">Approved</span>').show();
+          
+          // Show success message
+          alert('Student approved successfully!');
+        } else {
+          alert('Error: ' + response.message);
+        }
+      },
+      error: function(xhr, status, error) {
+        alert('Error approving student: ' + error);
+      }
+    });
+  }
+  
+  function rejectStudent(studentId, branch) {
+    $.ajax({
+      url: '/teacher/reject-student',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        studentId: studentId,
+        branch: branch
+      }),
+      success: function(response) {
+        if (response.success) {
+          // Update UI - disable reject button, enable approve button
+          $('#approve-' + studentId).prop('disabled', false);
+          $('#reject-' + studentId).prop('disabled', true);
+          $('#status-indicator-' + studentId).html('<span class="status-rejected">Rejected</span>').show();
+          
+          // Show success message
+          alert('Student rejected successfully!');
+        } else {
+          alert('Error: ' + response.message);
+        }
+      },
+      error: function(xhr, status, error) {
+        alert('Error rejecting student: ' + error);
+      }
+    });
+  }
+  
+  $(document).ready(function() {
+    // Handle update button click
+    $("#update-btn").click(function() {
+      // Refresh the page to show updated statuses
+      location.reload();
+    });
+    
+    // Set initial button states based on current status
+    $('[data-student-id]').each(function() {
+      var studentId = $(this).attr('data-student-id');
+      var statusIndicator = $('#status-indicator-' + studentId);
+      
+      if (statusIndicator.is(':visible')) {
+        var statusText = statusIndicator.text().trim();
+        
+        if (statusText === 'Approved') {
+          // Student is approved - disable approve button, enable reject button
+          $('#approve-' + studentId).prop('disabled', true);
+          $('#reject-' + studentId).prop('disabled', false);
+        } else if (statusText === 'Rejected') {
+          // Student is rejected - enable approve button, disable reject button
+          $('#approve-' + studentId).prop('disabled', false);
+          $('#reject-' + studentId).prop('disabled', true);
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

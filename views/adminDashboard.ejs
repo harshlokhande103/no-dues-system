@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - No Dues System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(120deg, #f7971e, #ffd200, #fff);
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(247,151,30,0.12);
+      padding: 2.5rem 2rem;
+    }
+    .dashboard-title {
+      font-size: 2.2rem;
+      color: #f7971e;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .logout-btn {
+      float: right;
+      background: #f7971e;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: -2.5rem;
+      margin-right: 0.5rem;
+      transition: background 0.2s;
+    }
+    .logout-btn:hover {
+      background: #ffd200;
+      color: #f7971e;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      color: #f7971e;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      border-left: 4px solid #ffd200;
+      padding-left: 10px;
+    }
+    .profile-info {
+      color: #444;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .status-table, .teacher-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+    .status-table th, .status-table td, .teacher-table th, .teacher-table td {
+      border: 1px solid #ffd200;
+      padding: 0.7rem 1rem;
+      text-align: center;
+    }
+    .status-table th, .teacher-table th {
+      background: #fffbe6;
+      color: #f7971e;
+    }
+    .status-approved { color: #27ae60; font-weight: bold; }
+    .status-pending { color: #f39c12; font-weight: bold; }
+    .status-rejected { color: #e74c3c; font-weight: bold; }
+    .download-btn {
+      background: #ffd200;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+    .download-btn:hover {
+      background: #f7971e;
+      color: #fff;
+    }
+    .placeholder {
+      color: #888;
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+    }
+    .search-bar {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .search-bar input, .search-bar select {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid #ffd200;
+      font-size: 1rem;
+    }
+    .styled-select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 1.5px solid #43cea2;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      background: #f8fafd;
+      color: #185a9d;
+      margin-bottom: 1.2rem;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #43cea220;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+    }
+
+    .styled-select:focus {
+      border: 1.5px solid #185a9d;
+      box-shadow: 0 4px 16px #43cea240;
+      background: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <button class="logout-btn">Logout</button>
+    <div class="dashboard-title">Admin Dashboard</div>
+
+    <!-- Profile Information -->
+    <div class="section">
+      <div class="section-title">Profile Information</div>
+      <div class="profile-info">
+        Name: <b><%= admin.name %></b><br>
+        Email: <b><%= admin.email %></b><br>
+        Branch: <b><%= admin.branch %></b>
+      </div>
+    </div>
+
+    <!-- Filter Students Section (update this part) -->
+    <div class="section">
+      <div class="section-title">Filter Students</div>
+      <form method="get" action="/admin/filter" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <!-- Branch selection removed since admins can only filter their own branch -->
+        <label>
+          Section:
+          <select name="section" style="padding:0.5rem 1rem; border-radius:6px; border:1px solid #43cea2; margin-left: 0.5rem;">
+            <option value="">All</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </label>
+        <label>
+          Year:
+          <select name="year" style="padding:0.5rem 1rem; border-radius:6px; border:1px solid #43cea2; margin-left: 0.5rem;">
+            <option value="">All</option>
+            <option value="1st">1st Year</option>
+            <option value="2nd">2nd Year</option>
+            <option value="3rd">3rd Year</option>
+            <option value="4th">4th Year</option>
+          </select>
+        </label>
+        <button type="submit" style="padding:0.6rem 1.2rem; border-radius:6px; border:none; background:#185a9d; color:#fff; font-weight:bold;">Filter</button>
+      </form>
+    </div>
+
+    <!-- All Teachers Table -->
+    <div class="section">
+      <div class="section-title">All Teachers (Your Branch)</div>
+      <ul>
+        <% if (teachers && teachers.length > 0) { %>
+          <% teachers.forEach(function(teacher) { %>
+            <li><b><%= teacher.name %></b> (<%= teacher.email %>)</li>
+          <% }) %>
+        <% } else { %>
+          <li><i>No teacher records found.</i></li>
+        <% } %>
+      </ul>
+    </div>
+
+    <!-- Notifications -->
+    <div class="section">
+      <div class="section-title">Notifications</div>
+      <!-- Notification Send Form (UI only, no backend logic) -->
+      <form method="POST" action="/admin/send-notification" style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+        <input
+          type="text"
+          name="notification"
+          placeholder="Type a notification to send to all teachers and students"
+          style="width: 70%; padding: 0.6rem 1rem; border-radius: 6px; border: 1px solid #ffd200; font-size: 1rem;"
+          required
+        />
+        <button
+          type="submit"
+          class="download-btn"
+          style="padding: 0.6rem 1.2rem; margin-left: 0.5rem;"
+        >
+          Send
+        </button>
+      </form>
+      <div class="placeholder">
+        <% if (notifications && notifications.length > 0) { %>
+          <ul style="list-style: none; padding-left: 0;">
+            <% notifications.forEach(function(note) { %>
+              <li style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                <span style="flex: 1;"><%= note.message %></span>
+                <form method="POST" action="/admin/delete-notification" style="margin: 0;">
+                  <input type="hidden" name="notificationId" value="<%= note.id %>">
+                  <button type="submit" style="background:#e74c3c;color:#fff;border:none;border-radius:5px;padding:2px 10px;cursor:pointer;">Delete</button>
+                </form>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <i>No notifications.</i>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
