@@ -172,19 +172,17 @@
             <td><%= student.year %></td>
             <td><%= student.section %></td>
             <td>
-              <div style="display: flex; justify-content: center; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 5px;">
-                  <button class="approve-btn" onclick="approveStudent('<%= student.id %>', '<%= student.branch %>')" 
-                          id="approve-<%= student.id %>" 
-                          <%= student.currentStatus === 'Approved' ? 'disabled' : '' %>>
-                    ✓ Approve
-                  </button>
-                  <button class="reject-btn" onclick="rejectStudent('<%= student.id %>', '<%= student.branch %>')" 
-                          id="reject-<%= student.id %>"
-                          <%= student.currentStatus === 'Rejected' ? 'disabled' : '' %>>
-                    ✗ Reject
-                  </button>
-                </div>
+              <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+                <button class="approve-btn" onclick="approveStudent('<%= student.id %>', '<%= student.branch %>')" 
+                        id="approve-<%= student.id %>" 
+                        <%= student.currentStatus === 'Approved' ? 'disabled' : '' %>>
+                  ✓ Approve
+                </button>
+                <button class="reject-btn" onclick="rejectStudent('<%= student.id %>', '<%= student.branch %>')" 
+                        id="reject-<%= student.id %>"
+                        <%= student.currentStatus === 'Rejected' ? 'disabled' : '' %>>
+                  ✗ Reject
+                </button>
                 <div id="status-indicator-<%= student.id %>" class="status-indicator" 
                      style="<%= student.approved || student.currentStatus ? 'display: inline-block;' : 'display: none;' %>">
                   <% if (student.currentStatus) { %>
